@@ -182,6 +182,8 @@ CY_APP_OTA_DEFINES += -DOTA_ENCRYPT_SFLASH_DATA
 endif
 endif
 -include $(SEARCH_btsdk-ota)/COMPONENT_ds2_app/GNUmakefile
+else
+DS2_LOCATION=$(shell env printf "0x%06X" $$(($(CY_FLASH0_BEGIN_ADDR)+$(CY_FLASH0_LENGTH))))
 endif
 
 # use flash offset and length to limit xip range
@@ -201,6 +203,7 @@ ifeq ($(XIP),xip)
 CY_CORE_APP_XIP_EXTRA=_XIP_
 CY_CORE_LD_DEFS+=XIP_DS_OFFSET=$(CY_CORE_APP_SPECIFIC_DS_LEN)
 CY_CORE_LD_DEFS+=XIP_OBJ=$(CY_CORE_XIP_OBJ)
+CY_CORE_LD_DEFS+=XIP_LEN=0x$(shell env printf "%08x" $$(($(DS2_LOCATION) - $(DS_LOCATION) - $(CY_CORE_APP_SPECIFIC_DS_LEN))))
 # add config "skip" record for xip block
 CY_CORE_CGSLIST+=$(CY_INTERNAL_BASELIB_PATH)/platforms/add_xip_skip_config.cgs
 endif
